@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Restaurant = require('../models/restaurant');
+const Restaurant = require('../models/Restaurant');
 
-// Get all restaurants
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const restaurants = await Restaurant.find();
     res.json(restaurants);
