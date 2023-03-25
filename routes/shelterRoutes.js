@@ -29,7 +29,7 @@ async function getShelter(req, res, next) {
         return res.json({message: err.message});
     }
 }
-
+//Create a new shelter
 router.post('/', async (req, res) => {
     const shelter = new Shelter({
         name:req.body.name,
@@ -61,7 +61,7 @@ router.patch('/:id', getShelter, async (req, res)=>{
         res.json({message: err.message});
     }
 });
-
+//Delete shelter
 router.delete('/:id', getShelter, async (req, res) => {
     try {
       await res.shelter.remove();
