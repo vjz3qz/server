@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Restaurant = require('./restaurant');
+const Restaurant = require('../models/restaurant');
 
 mongoose.connect('mongodb://localhost:27017/LeftoverLoveDB', { useNewUrlParser: true });
 
