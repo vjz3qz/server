@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Food = require("../models/Food");
+const Restaurant = require("../models/Restaurant");
 
 //used to get all foods from all restaurants
-router.get("/api/foods", async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const foods = await Food.find();
         res.json(foods);
@@ -13,7 +14,7 @@ router.get("/api/foods", async (req, res) => {
 });
 
 //returns a singular food item
-router.get("/api/foods/:id", getFood, (req, res) => {
+router.get("/:id", getFood, (req, res) => {
     res.json(res.food);
 });
 
@@ -33,11 +34,12 @@ async function getFood(req, res, next) {
 }
 
 //creating a new food item
-router.post('/api/foods', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
-      const restaurantId = req.body.restaurantId;
+      const restaurantId = req.body.restaurant;
+      console.log(req.body);
       const restaurant = await Restaurant.findById(restaurantId);
-      if (!restaurant) {
+      if (restaurant === null) {
         return res.json({ message: 'Restaurant not found' });
       }
   
@@ -60,16 +62,17 @@ router.post('/api/foods', async (req, res) => {
       const savedRestaurant = await restaurant.save();
   
       // Return the newly created food item and the updated restaurant
+      console.log({ food: savedFood, restaurant: savedRestaurant });
       res.json({ food: savedFood, restaurant: savedRestaurant });
     } catch (error) {
       console.error(error);
-      res.json({ message: 'Server error' });
+      res.status(400).json({ message: 'Server error' });
     }
   });
 
 
 // Update a food item
-router.patch('/api/foods/:id', getFoodById, async (req, res) => {
+router.patch('/:id', getFoodById, async (req, res) => {
     if (req.body.name != null) {
       res.food.name = req.body.name;
     }
@@ -95,7 +98,7 @@ router.patch('/api/foods/:id', getFoodById, async (req, res) => {
   });
   
   // Delete a food item
-  router.delete('/api/foods/:id', getFoodById, async (req, res) => {
+  router.delete('/:id', getFoodById, async (req, res) => {
     try {
       await res.food.remove();
       res.json({ message: 'Food item deleted' });

@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const Restaurant = require('./models/Restaurant');
 const restaurantRoutes = require('./routes/restaurantRoutes');
+const foodRoutes = require('./routes/foodRoutes');
 const cors = require('cors');
 
 
@@ -18,6 +19,7 @@ mongoose.connect('mongodb://localhost:27017/LeftoverLoveDB', { useNewUrlParser: 
 
 app.use(express.json());
 app.use('/api/restaurants', restaurantRoutes);
+app.use('/api/food', foodRoutes);
 
 app.get("/api", (req, res) => {
     res.send("hello");
