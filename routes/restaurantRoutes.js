@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Restaurant = require('../models/Restaurant');
 
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const restaurants = await Restaurant.find();
     res.json(restaurants);
@@ -11,23 +11,17 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get('/:id', getRestaurant, (req, res) => {
-  res.json(res.restaurant);
-});
-
-async function getRestaurant(req, res, next) {
-    try {
-      restaurant = await Restaurant.findById(req.params.id);
-      if (restaurant == null) {
-        return res.json({ message: 'Cannot find restaurant' });
-      }
-    } catch (err) {
-      return res.json({ message: err.message });
+router.get('/:id', async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findById(req.params.id);
+    if (restaurant == null) {
+      return res.json({ message: 'Cannot find restaurant' });
     }
-  
-    res.restaurant = restaurant;
-    next();
+    res.json(restaurant);
+  } catch (err) {
+    res.json({ message: err.message });
   }
+});
 
 router.post('/', async (req, res) => {
   const restaurant = new Restaurant({
@@ -37,37 +31,45 @@ router.post('/', async (req, res) => {
   });
   try {
     const newRestaurant = await restaurant.save();
-    res.json(newRestaurant);
+    res.status(201).json(newRestaurant);
   } catch (err) {
     res.json({ message: err.message });
   }
 });
 
-router.patch('/:id', getRestaurant, async (req, res) => {
+router.patch('/:id', async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findById(req.params.id);
+    if (restaurant == null) {
+      return res.json({ message: 'Cannot find restaurant' });
+    }
     if (req.body.name != null) {
-      res.restaurant.name = req.body.name;
+      restaurant.name = req.body.name;
     }
     if (req.body.location != null) {
-      res.restaurant.location = req.body.location;
+      restaurant.location = req.body.location;
     }
     if (req.body.email != null) {
-      res.restaurant.email = req.body.email;
+      restaurant.email = req.body.email;
     }
-    try {
-      const updatedRestaurant = await res.restaurant.save();
-      res.json(updatedRestaurant);
-    } catch (err) {
-      res.json({ message: err.message });
+    const updatedRestaurant = await restaurant.save();
+    res.json(updatedRestaurant);
+  } catch (err) {
+    res.json({ message: err.message });
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findById(req.params.id);
+    if (restaurant == null) {
+      return res.json({ message: 'Cannot find restaurant' });
     }
-  });
-  
-  router.delete('/:id', getRestaurant, async (req, res) => {
-    try {
-      await res.restaurant.remove();
-      res.json({ message: 'Deleted Restaurant' });
-    } catch (err) {
-      res.json({ message: err.message });
-    }
-  });
+    await restaurant.remove();
+    res.json({ message: 'Deleted Restaurant' });
+  } catch (err) {
+    res.json({ message: err.message });
+  }
+});
 
 module.exports = router;

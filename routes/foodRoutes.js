@@ -3,7 +3,7 @@ const router = express.Router();
 const Food = require("../models/Food");
 
 //used to get all foods from all restaurants
-router.get("/", async (req, res) => {
+router.get("/api/foods", async (req, res) => {
     try {
         const foods = await Food.find();
         res.json(foods);
@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
 });
 
 //returns a singular food item
-router.get("/:id", getFood, (req, res) => {
+router.get("/api/foods/:id", getFood, (req, res) => {
     res.json(res.food);
 });
 
@@ -33,7 +33,7 @@ async function getFood(req, res, next) {
 }
 
 //creating a new food item
-router.post('/', async (req, res) => {
+router.post('/api/foods', async (req, res) => {
     try {
       const restaurantId = req.body.restaurantId;
       const restaurant = await Restaurant.findById(restaurantId);
@@ -69,7 +69,7 @@ router.post('/', async (req, res) => {
 
 
 // Update a food item
-router.patch('/:id', getFoodById, async (req, res) => {
+router.patch('/api/foods/:id', getFoodById, async (req, res) => {
     if (req.body.name != null) {
       res.food.name = req.body.name;
     }
@@ -95,7 +95,7 @@ router.patch('/:id', getFoodById, async (req, res) => {
   });
   
   // Delete a food item
-  router.delete('/:id', getFoodById, async (req, res) => {
+  router.delete('/api/foods/:id', getFoodById, async (req, res) => {
     try {
       await res.food.remove();
       res.json({ message: 'Food item deleted' });
