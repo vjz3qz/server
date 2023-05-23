@@ -23,6 +23,43 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+router.get('/expiring-food', async (req, res) => {
+  try {
+    const restaurants = await Restaurant.aggregate([
+      {
+        $lookup: {
+          from: 'foods',
+          localField: 'foods',
+          foreignField: '_id',
+          as: 'foodObjects'
+        }
+      },
+      {
+        $unwind: '$foodObjects'
+      },
+      {
+        $match: {
+          'foodObjects.expirationDate': {
+            $lte: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          location: { $first: '$location' },
+          email: { $first: '$email' },
+          foods: { $push: '$foodObjects' }
+        }
+      }
+    ]);
+    res.json(restaurants);
+  } catch (err) {
+    res.json({ message: err.message });
+  }
+});
+
 router.post('/', async (req, res) => {
   const restaurant = new Restaurant({
     name: req.body.name,

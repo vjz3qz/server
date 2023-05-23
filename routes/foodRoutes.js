@@ -37,7 +37,7 @@ async function getFood(req, res, next) {
 router.post('/', async (req, res) => {
     try {
       const restaurantId = req.body.restaurant;
-      console.log(req.body);
+      console.log(restaurantId);
       const restaurant = await Restaurant.findById(restaurantId);
       if (restaurant === null) {
         return res.json({ message: 'Restaurant not found' });
