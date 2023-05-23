@@ -14,8 +14,8 @@ const restaurantSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  foods: [{
-    type: mongoose.Schema.Types.ObjectId,
+  foods: [{//make this a list of foods object...look into how to do that
+    type: mongoose.Schema.Types.ObjectId,//linking food and restaurant together
     ref: 'Food'
   }]
 });

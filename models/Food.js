@@ -19,7 +19,7 @@ const FoodSchema = new Schema({
     required: true 
   },
   restaurant: { 
-    type: mongoose.Schema.Types.ObjectId, 
+    type: mongoose.Schema.Types.ObjectId, //linking food with restaurant together
     ref: 'Restaurant' 
   },
 });

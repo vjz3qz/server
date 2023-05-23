@@ -10,7 +10,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);//edit for ENV api key
 // Define a function to check for approaching expiration dates and notify the restaurant
 async function getRestaurantsWithFood() {
   try {
-    const response = await axios.get('http://localhost:1234/restaurants-with-food');
+    const response = await axios.get('http://localhost:1234/restaurants-with-near-food');
     return response.data;
   } catch (error) {
     console.error(error);

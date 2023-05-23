@@ -14,6 +14,7 @@ const shelterSchema = new mongoose.Schema({
         type: String,
         required: true
     }
+    //Add phone number
 });
 
 const Shelter = mongoose.model('Shelter', shelterSchema);
