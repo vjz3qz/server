@@ -4,7 +4,7 @@ const Food = require("../models/Food");
 const Restaurant = require("../models/Restaurant");
 
 //used to get all foods from all restaurants
-router.get("/", async (req, res) => {
+router.get("/", async (req, res) => {//Need to change to get the entire list instead
     try {
         const foods = await Food.find();
         res.json(foods);
@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
 });
 
 //returns a singular food item
-router.get("/:id", getFood, (req, res) => {
+router.get("/:id", getFood, (req, res) => {//find in list and return
     res.json(res.food);
 });
 
