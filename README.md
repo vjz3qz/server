@@ -12,7 +12,7 @@ This is the server-side submodule of the Leftover Link application. It is built 
 
 To get a local copy of the server-side submodule up and running, follow these steps:
 
-1. Clone the main repository: `git clone https://github.com/your-username/leftover-link.git`
+1. Clone the main repository: `git clone https://github.com/vjz3qz/leftover-link.git`
 2. Navigate to the server directory: `cd leftover-link/server`
 3. Install the dependencies: `npm install`
 4. Set up a MongoDB database and provide the connection URL in the `.env` file.
