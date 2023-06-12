@@ -54,6 +54,8 @@ router.get('/expiring-food', async (req, res) => {
         }
       }
     ]);
+    // const restaurantsWithCoords = await convertAddressToCoords(restaurants);
+    // TODO create a function: convertAddressToCoords and geocode address
     res.json(restaurants);
   } catch (err) {
     res.json({ message: err.message });
