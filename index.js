@@ -10,7 +10,7 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 const username = process.env.USERNAME;
-const password = process.env.password;
+const password = process.env.PASSWORD;
 const host = process.env.HOST;
 const port = process.env.PORT;
 const databaseName = process.env.DBNAME;
