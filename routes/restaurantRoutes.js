@@ -63,7 +63,6 @@ router.get('/expiring-food', async (req, res) => {
 
 // TODO create a function: convertAddressToCoords and geocode address
 const axios = require('axios');
-
 const convertAddressToCoords = async (restaurants) => {
   try {
     require('dotenv').config();
