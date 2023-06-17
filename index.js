@@ -8,16 +8,26 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
-// Connect to database
-mongoose.connect('mongodb://localhost:27017/LeftoverLoveDB', { useNewUrlParser: true })
+const username = 'admin';
+const password = 'admin';
+const host = '23.20.209.118';
+const port = '27017';
+const databaseName = 'LeftoverLinkDB';
+
+const url = `mongodb://${username}:${password}@${host}:${port}/${databaseName}`;
+
+mongoose.connect(url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
   .then(() => {
-    console.log('Connected to database');
+    console.log('Connected to MongoDB successfully');
   })
-  .catch((err) => {
-    console.error(err);
+  .catch((error) => {
+    console.error('Error connecting to MongoDB:', error);
   });
 
-app.use(express.json());
+  app.use(express.json());
 app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/food', foodRoutes);
 
@@ -31,8 +41,6 @@ async function getRestaurants() {
   const restaurants = await Restaurant.find({});
   return restaurants;
 }
-
-
 
 getRestaurants()
   .then((names) => {
