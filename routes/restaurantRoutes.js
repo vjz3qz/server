@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Restaurant = require('../models/Restaurant');
-
+require('dotenv').config();
 router.get('/', async (req, res) => {
   try {
     const restaurants = await Restaurant.find();
@@ -65,7 +65,6 @@ router.get('/expiring-food', async (req, res) => {
 const axios = require('axios');
 const convertAddressToCoords = async (restaurants) => {
   try {
-    require('dotenv').config();
     const apiKey = process.env.API_KEY; // Replace with your own API key
 
     const convertedRestaurants = await Promise.all(restaurants.map(async (restaurant) => {
