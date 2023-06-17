@@ -11,7 +11,6 @@ const app = express();
 app.use(cors());
 const username = process.env.USERNAME;
 const password = process.env.PASSWORD;
-//console.log(username);
 const host = process.env.HOST;
 const port = process.env.PORT;
 const databaseName = process.env.DBNAME;
