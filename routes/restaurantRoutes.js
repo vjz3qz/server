@@ -1,28 +1,33 @@
 const express = require('express');
 const router = express.Router();
 const Restaurant = require('../models/Restaurant');
+const axios = require('axios');
 require('dotenv').config();
+
+// Get all restaurants
 router.get('/', async (req, res) => {
   try {
     const restaurants = await Restaurant.find();
     res.json(restaurants);
   } catch (err) {
-    res.json({ message: err.message });
+    res.status(500).json({ error: 'Failed to retrieve restaurants' });
   }
 });
 
+// Get a specific restaurant by ID
 router.get('/:id', async (req, res) => {
   try {
     const restaurant = await Restaurant.findById(req.params.id);
-    if (restaurant == null) {
-      return res.json({ message: 'Cannot find restaurant' });
+    if (!restaurant) {
+      return res.status(404).json({ error: 'Restaurant not found' });
     }
     res.json(restaurant);
   } catch (err) {
-    res.json({ message: err.message });
+    res.status(500).json({ error: 'Failed to retrieve restaurant' });
   }
 });
 
+// Get restaurants with expiring food within 3 days
 router.get('/expiring-food', async (req, res) => {
   try {
     const restaurants = await Restaurant.aggregate([
@@ -40,7 +45,7 @@ router.get('/expiring-food', async (req, res) => {
       {
         $match: {
           'foodObjects.expirationDate': {
-            $lte: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)//check if within 3 days then we add the entire restaurants. 
+            $lte: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
           }
         }
       },
@@ -54,26 +59,21 @@ router.get('/expiring-food', async (req, res) => {
         }
       }
     ]);
-    //const restaurantsWithCoords = await convertAddressToCoords(restaurants); this will return a list of longitutde and latitude
     res.json(restaurants);
   } catch (err) {
-    res.json({ message: err.message });
+    res.status(500).json({ error: 'Failed to retrieve restaurants with expiring food' });
   }
 });
 
-// TODO create a function: convertAddressToCoords and geocode address
-const axios = require('axios');
+// Helper function to convert address to coordinates
 const convertAddressToCoords = async (address) => {
   try {
-    const apiKey = process.env.API_KEY; // Replace with your own API key
-
+    const apiKey = process.env.API_KEY;
     const geocodingEndpoint = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
-
     const response = await axios.get(geocodingEndpoint);
-
     if (response.data.status === 'OK' && response.data.results.length > 0) {
       const { lat, lng } = response.data.results[0].geometry.location;
-      return [lng, lat]; // Return longitude and latitude as a pair [lng, lat]
+      return [lng, lat];
     } else {
       throw new Error('Failed to convert address to coordinates');
     }
@@ -82,75 +82,54 @@ const convertAddressToCoords = async (address) => {
   }
 };
 
+// Create a new restaurant with coordinates
 router.post('/', async (req, res) => {
-  const restaurant = new Restaurant({
-    name: req.body.name,
-    location: req.body.location,
-    email: req.body.email
-  });
+  const { name, address, email } = req.body;
   try {
+    const coordinates = await convertAddressToCoords(address);
+    const restaurant = new Restaurant({ name, email, address, coordinates, foods: [] });
     const newRestaurant = await restaurant.save();
     res.status(201).json(newRestaurant);
   } catch (err) {
-    res.json({ message: err.message });
+    res.status(400).json({ error: 'Failed to create a new restaurant' });
   }
 });
 
+// Update a restaurant by ID
 router.patch('/:id', async (req, res) => {
   try {
     const restaurant = await Restaurant.findById(req.params.id);
-    if (restaurant == null) {
-      return res.json({ message: 'Cannot find restaurant' });
+    if (!restaurant) {
+      return res.status(404).json({ error: 'Restaurant not found' });
     }
-    if (req.body.name != null) {
+    if (req.body.name) {
       restaurant.name = req.body.name;
     }
-    if (req.body.location != null) {
+    if (req.body.location) {
       restaurant.location = req.body.location;
     }
-    if (req.body.email != null) {
+    if (req.body.email) {
       restaurant.email = req.body.email;
     }
     const updatedRestaurant = await restaurant.save();
     res.json(updatedRestaurant);
   } catch (err) {
-    res.json({ message: err.message });
+    res.status(500).json({ error: 'Failed to update restaurant' });
   }
 });
 
+// Delete a restaurant by ID
 router.delete('/:id', async (req, res) => {
   try {
     const restaurant = await Restaurant.findById(req.params.id);
-    if (restaurant == null) {
-      return res.json({ message: 'Cannot find restaurant' });
+    if (!restaurant) {
+      return res.status(404).json({ error: 'Restaurant not found' });
     }
     await restaurant.remove();
-    res.json({ message: 'Deleted Restaurant' });
+    res.json({ message: 'Deleted restaurant' });
   } catch (err) {
-    res.json({ message: err.message });
+    res.status(500).json({ error: 'Failed to delete restaurant' });
   }
 });
 
-
-// create a post request that takes in restaurant params: name, address, email, then createa a restaurant object with those params and coord by calling geo converter
-router.post('/', async (req, res) => {
-  const { name, address, email } = req.body;
-  try {
-    const coordinates = await convertAddressToCoords(address);
-
-    const restaurant = new Restaurant({
-      name: name,
-      email: email,
-      address: address,
-      coordinates: coordinates,
-      foods: []
-    });
-
-    const newRestaurant = await restaurant.save();
-
-    res.status(201).json(newRestaurant);
-  } catch (err) {
-    res.json({ message: err.message });
-  }
-});
 module.exports = router;
