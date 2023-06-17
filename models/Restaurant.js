@@ -6,12 +6,16 @@ const restaurantSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  location: {
+  email: {
     type: String,
     required: true
   },
-  email: {
+  address: {
     type: String,
+    required: true
+  },
+  coordinates: {
+    type: [Number],
     required: true
   },
   foods: [{//make this a list of foods object...look into how to do that

@@ -54,8 +54,8 @@ router.get('/expiring-food', async (req, res) => {
         }
       }
     ]);
-    const restaurantsWithCoords = await convertAddressToCoords(restaurants);// this will return a list of longitutde and latitude
-    res.json(restaurantsWithCoords);
+    //const restaurantsWithCoords = await convertAddressToCoords(restaurants); this will return a list of longitutde and latitude
+    res.json(restaurants);
   } catch (err) {
     res.json({ message: err.message });
   }
@@ -63,26 +63,22 @@ router.get('/expiring-food', async (req, res) => {
 
 // TODO create a function: convertAddressToCoords and geocode address
 const axios = require('axios');
-const convertAddressToCoords = async (restaurants) => {
+const convertAddressToCoords = async (address) => {
   try {
     const apiKey = process.env.API_KEY; // Replace with your own API key
 
-    const convertedRestaurants = await Promise.all(restaurants.map(async (restaurant) => {
-      const geocodingEndpoint = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(restaurant.address)}&key=${apiKey}`;
+    const geocodingEndpoint = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
 
-      const response = await axios.get(geocodingEndpoint);
+    const response = await axios.get(geocodingEndpoint);
 
-      if (response.data.status === 'OK' && response.data.results.length > 0) {
-        const { lat, lng } = response.data.results[0].geometry.location;
-        return [lat, lng];
-      } else {
-        throw new Error('Failed to convert address to coordinates');
-      }
-    }));
-
-    return convertedRestaurants;
+    if (response.data.status === 'OK' && response.data.results.length > 0) {
+      const { lat, lng } = response.data.results[0].geometry.location;
+      return [lng, lat]; // Return longitude and latitude as a pair [lng, lat]
+    } else {
+      throw new Error('Failed to convert address to coordinates');
+    }
   } catch (err) {
-    throw new Error('Failed to convert addresses to coordinates');
+    throw new Error('Failed to convert address to coordinates');
   }
 };
 
@@ -135,4 +131,26 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+
+// create a post request that takes in restaurant params: name, address, email, then createa a restaurant object with those params and coord by calling geo converter
+router.post('/', async (req, res) => {
+  const { name, address, email } = req.body;
+  try {
+    const coordinates = await convertAddressToCoords(address);
+
+    const restaurant = new Restaurant({
+      name: name,
+      email: email,
+      address: address,
+      coordinates: coordinates,
+      foods: []
+    });
+
+    const newRestaurant = await restaurant.save();
+
+    res.status(201).json(newRestaurant);
+  } catch (err) {
+    res.json({ message: err.message });
+  }
+});
 module.exports = router;
