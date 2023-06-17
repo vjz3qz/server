@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Restaurant = require('./models/Restaurant');
 const restaurantRoutes = require('./routes/restaurantRoutes');
 const foodRoutes = require('./routes/foodRoutes');
+const shelterRoutes = require('./routes/shelterRoutes');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -16,7 +17,7 @@ const port = process.env.PORT;
 const databaseName = process.env.DBNAME;
 
 const url = `mongodb://${username}:${password}@${host}:${port}/${databaseName}`;
-console.log(url)
+
 mongoose.connect(url, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -26,26 +27,14 @@ mongoose.connect(url, {
   })
   .catch((error) => {
     console.error('Error connecting to MongoDB:', error);
-  });
+  }
+);
 
-  app.use(express.json());
+app.use(express.json());
 app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/food', foodRoutes);
+app.use('/api/shelters', shelterRoutes);
 
-app.get("/api", (req, res) => {
-    res.send("hello");
+app.listen(1234, (req, res) => {
+  console.log("server hosted on port 1234")
 });
-
-app.listen(1234);
-
-async function getRestaurants() {
-  const restaurants = await Restaurant.find({});
-  return restaurants;
-}
-
-getRestaurants()
-  .then((names) => {
-      names.forEach(element=>{
-          console.log(element.name);
-      });
-  });

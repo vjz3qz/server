@@ -14,23 +14,18 @@ router.get('/', async (req, res) => {
 });
 
 // Get a specific food item
-router.get('/:id', getFood, (req, res) => {
-  res.json(res.food);
-});
-
-// Helper function to get a food item by ID
-async function getFood(req, res, next) {
+router.get('/:id', async (req, res) => {
   try {
     const food = await Food.findById(req.params.id);
     if (!food) {
       return res.json({ message: 'Cannot find food item' });
     }
-    res.food = food;
-    next();
+    res.json(food);
   } catch (err) {
     return res.json({ message: err.message });
   }
-}
+});
+
 
 // Create a new food item
 router.post('/', async (req, res) => {

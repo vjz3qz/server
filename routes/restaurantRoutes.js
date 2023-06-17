@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Restaurant = require('../models/Restaurant');
 const axios = require('axios');
+const Food = require('../models/Food');
 require('dotenv').config();
 
 // Get all restaurants
@@ -117,6 +118,8 @@ router.patch('/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to update restaurant' });
   }
 });
+
+// TODO: Update a restaurant by ID by adding a food or deleting a food. discuss functionality
 
 // Delete a restaurant by ID
 router.delete('/:id', async (req, res) => {
