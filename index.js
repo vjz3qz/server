@@ -4,15 +4,17 @@ const Restaurant = require('./models/Restaurant');
 const restaurantRoutes = require('./routes/restaurantRoutes');
 const foodRoutes = require('./routes/foodRoutes');
 const cors = require('cors');
+require('dotenv').config();
 
 
 const app = express();
 app.use(cors());
-const username = 'admin';
-const password = 'admin';
-const host = '23.20.209.118';
-const port = '27017';
-const databaseName = 'LeftoverLinkDB';
+const username = process.env.USERNAME;
+const password = process.env.password;
+//console.log(username);
+const host = process.env.HOST;
+const port = process.env.PORT;
+const databaseName = process.env.DBNAME;
 
 const url = `mongodb://${username}:${password}@${host}:${port}/${databaseName}`;
 
