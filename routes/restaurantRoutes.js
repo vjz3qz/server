@@ -75,7 +75,7 @@ const convertAddressToCoords = async (restaurants) => {
 
       if (response.data.status === 'OK' && response.data.results.length > 0) {
         const { lat, lng } = response.data.results[0].geometry.location;
-        return { ...restaurant, latitude: lat, longitude: lng };
+        return [lat, lng];
       } else {
         throw new Error('Failed to convert address to coordinates');
       }
