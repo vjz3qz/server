@@ -66,7 +66,8 @@ const axios = require('axios');
 
 const convertAddressToCoords = async (restaurants) => {
   try {
-    const apiKey = 'AIzaSyD-MyIZGKE9kTRcoxNiLXzaa513kJVubLc'; // Replace with your own API key
+    require('dotenv').config();
+    const apiKey = process.env.API_KEY; // Replace with your own API key
 
     const convertedRestaurants = await Promise.all(restaurants.map(async (restaurant) => {
       const geocodingEndpoint = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(restaurant.address)}&key=${apiKey}`;
