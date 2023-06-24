@@ -4,7 +4,7 @@ const Restaurant = require('../models/Restaurant');
 const axios = require('axios');
 const Food = require('../models/Food');
 require('dotenv').config();
-
+const apiKey = process.env.REACT_APP_API_KEY;
 // Get all restaurants
 router.get('/', async (req, res) => {
   try {
@@ -69,7 +69,6 @@ router.get('/expiring-food', async (req, res) => {
 // Helper function to convert address to coordinates
 const convertAddressToCoords = async (address) => {
   try {
-    const apiKey = process.env.API_KEY;
     const geocodingEndpoint = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
     const response = await axios.get(geocodingEndpoint);
     if (response.data.status === 'OK' && response.data.results.length > 0) {
