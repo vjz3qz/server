@@ -38,17 +38,3 @@ app.use('/api/shelters', shelterRoutes);
 app.listen(1234, (req, res) => {
   console.log("server hosted on port 1234")
 });
-
-async function getRestaurants() {
-  const restaurants = await Restaurant.find({});
-  return restaurants;
-}
-
-
-
-getRestaurants()
-  .then((names) => {
-      names.forEach(element=>{
-          console.log(element.name);
-      });
-  });
