@@ -5,26 +5,17 @@ const axios = require('axios');
 const Food = require('../models/Food');
 require('dotenv').config();
 const apiKey = process.env.REACT_APP_API_KEY;
+
+// TODO: update all error messages and returns
+// TODO: test all requests
+
 // Get all restaurants
 router.get('/', async (req, res) => {
   try {
-    const restaurants = await Restaurant.find();
+    const restaurants = await Restaurant.find({});
     res.json(restaurants);
   } catch (err) {
     res.status(500).json({ error: 'Failed to retrieve restaurants' });
-  }
-});
-
-// Get a specific restaurant by ID
-router.get('/:id', async (req, res) => {
-  try {
-    const restaurant = await Restaurant.findById(req.params.id);
-    if (!restaurant) {
-      return res.status(404).json({ error: 'Restaurant not found' });
-    }
-    res.json(restaurant);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to retrieve restaurant' });
   }
 });
 
@@ -66,6 +57,19 @@ router.get('/expiring-food', async (req, res) => {
   }
 });
 
+// Get a specific restaurant by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findById(req.params.id);
+    if (!restaurant) {
+      return res.status(404).json({ error: 'Restaurant not found' });
+    }
+    res.json(restaurant);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to retrieve restaurant by ID' });
+  }
+});
+
 // Helper function to convert address to coordinates
 const convertAddressToCoords = async (address) => {
   try {
@@ -73,9 +77,9 @@ const convertAddressToCoords = async (address) => {
     const response = await axios.get(geocodingEndpoint);
     if (response.data.status === 'OK' && response.data.results.length > 0) {
       const { lat, lng } = response.data.results[0].geometry.location;
-      return [lng, lat];
+      return [lat, lng];
     } else {
-      throw new Error('Failed to convert address to coordinates');
+      throw new Error('Failed to convert address to coordinates. Status: ${response.data.status}');
     }
   } catch (err) {
     throw new Error('Failed to convert address to coordinates');
@@ -89,9 +93,9 @@ router.post('/', async (req, res) => {
     const coordinates = await convertAddressToCoords(address);
     const restaurant = new Restaurant({ name, email, address, coordinates, foods: [] });
     const newRestaurant = await restaurant.save();
-    res.status(201).json(newRestaurant);
+    res.status(201).json(newRestaurant); // TODO: send an OK status
   } catch (err) {
-    res.status(400).json({ error: 'Failed to create a new restaurant' });
+    res.status(400).json({ error: 'Failed to create a new restaurant', originalError: err.message });
   }
 });
 
@@ -153,7 +157,7 @@ router.patch('/delete-food/:id', async (req, res) => {
     const updatedRestaurant = await restaurant.save();//update the restaurant then
     res.json(updatedRestaurant);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to delete food from restaurant' });
+    res.status(500).json({ error: 'Failed to delete food from restaurant', originalError: err.message });
   }
 });
 
@@ -170,5 +174,7 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete restaurant' });
   }
 });
+
+// TODO: Delete all restaurants
 
 module.exports = router;
